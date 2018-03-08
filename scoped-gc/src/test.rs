@@ -46,30 +46,31 @@ impl<'a> Trace for CircularNamedObject<'a> {
 
 #[test]
 fn test_gc() {
-  let scope: GcScope = GcScope::new();
-  let n1: Gc<NamedObject>;
-  {
-    let n2: Gc<NamedObject> = scope.alloc(NamedObject { name: String::from("Hello, World!") }).unwrap();
-    n1 = Gc::clone(&n2);
-  }
-  assert_eq!(n1.name, String::from("Hello, World!"));
+  GcScope::with(|scope| {
+    let n1: Gc<NamedObject>;
+    {
+      let n2: Gc<NamedObject> = scope.alloc(NamedObject { name: String::from("Hello, World!") }).unwrap();
+      n1 = Gc::clone(&n2);
+    }
+    assert_eq!(n1.name, String::from("Hello, World!"));
+  })
 }
 
 #[test]
 fn test_gc_ref() {
   let a: String = String::from("Hello, World!");
-  {
-    let scope: GcScope = GcScope::new();
+  GcScope::with(|scope| {
     let n: Gc<RefNamedObject> = scope.alloc(RefNamedObject { name: &a }).unwrap();
     assert_eq!(n.name, String::from("Hello, World!"));
-  }
+  })
 }
 
 #[test]
 fn test_gc_circular() {
-  let scope: GcScope = GcScope::new();
-  let n1 = scope.alloc(GcRefCell::new(CircularNamedObject { name: String::from("n1"), other: None })).unwrap();
-  let n2 = scope.alloc(GcRefCell::new(CircularNamedObject { name: String::from("n2"), other: None })).unwrap();
-  n1.borrow_mut().other = Some(Gc::clone(&n2));
-  n2.borrow_mut().other = Some(Gc::clone(&n1));
+  GcScope::with(|scope| {
+    let n1 = scope.alloc(GcRefCell::new(CircularNamedObject { name: String::from("n1"), other: None })).unwrap();
+    let n2 = scope.alloc(GcRefCell::new(CircularNamedObject { name: String::from("n2"), other: None })).unwrap();
+    n1.borrow_mut().other = Some(Gc::clone(&n2));
+    n2.borrow_mut().other = Some(Gc::clone(&n1));
+  })
 }

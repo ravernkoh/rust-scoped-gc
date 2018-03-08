@@ -15,11 +15,9 @@
 /// }
 ///
 /// fn main() {
-///   let message: Gc<NamedObject>;
-///   {
-///     let scope: GcScope = GcScope::new();
-///     message = scope.alloc(NamedObject { name: String::from("Hello, World!") }).unwrap();
-///   }
+///   let message = GcScope::with(|scope| {
+///     scope.alloc(NamedObject { name: String::from("Hello, World!") }).unwrap()
+///   });
 ///   println!("{}", message.name);
 /// }
 /// ```
@@ -38,12 +36,13 @@
 /// }
 ///
 /// fn main() {
-///   let scope: GcScope = GcScope::new();
-///   let message: Gc<RefNamedObject>;
-///   {
-///     let hello_world: String = String::from("Hello, World!");
-///     message = scope.alloc(RefNamedObject { name: &hello_world }).unwrap();
-///   }
+///   GcScope::with(|scope| {
+///     let message: Gc<RefNamedObject>;
+///     {
+///       let hello_world: String = String::from("Hello, World!");
+///       message = scope.alloc(RefNamedObject { name: &hello_world }).unwrap();
+///     }
+///   })
 /// }
 /// ```
 
