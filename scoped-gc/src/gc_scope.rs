@@ -6,17 +6,17 @@ use gc_state::GcState;
 use trace::Trace;
 
 #[derive(Debug)]
-pub struct GcScope<'gc> {
-  state: RefCell<GcState<'gc>>,
+pub struct GcScope<'outer> {
+  state: RefCell<GcState<'outer>>,
 }
 
-impl<'gc> GcScope<'gc> {
-  pub fn new() -> GcScope<'gc> {
+impl<'outer> GcScope<'outer> {
+  pub fn new() -> GcScope<'outer> {
     GcScope { state: RefCell::new(GcState::new()) }
   }
 
   /// Allocates `value` in this garbage-collected scope and returns a `Gc` smart pointer to it.
-  pub fn alloc<T: Trace + 'gc>(&self, value: T) -> Result<Gc<'gc, T>, GcAllocErr> {
+  pub fn alloc<'inner, T: Trace + 'outer>(&'inner self, value: T) -> Result<Gc<'inner, T>, GcAllocErr> {
     value.unroot();
     self.state.borrow_mut()
       .alloc(value)
