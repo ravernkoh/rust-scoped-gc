@@ -1,7 +1,7 @@
 use ::std::cell::{Cell, RefCell};
 use ::std::marker::PhantomData;
-use gc_alloc_err::GcAllocErr;
 use gc::Gc;
+use gc_alloc_err::GcAllocErr;
 use gc_state::GcState;
 use trace::Trace;
 
@@ -11,7 +11,12 @@ pub struct GcScope<'gc> {
 }
 
 impl<'gc> GcScope<'gc> {
-  pub fn new() -> GcScope<'gc> {
+  pub fn with<F, R>(f: F) -> R where F: FnOnce(&'gc GcScope<'gc>) -> R {
+    let gc_scope = GcScope::new();
+    f(&gc_scope)
+  }
+
+  fn new() -> GcScope<'gc> {
     GcScope { state: RefCell::new(GcState::new()) }
   }
 
