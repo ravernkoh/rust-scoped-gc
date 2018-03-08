@@ -1,3 +1,5 @@
+#![feature(raw)]
+
 /// This module lets you create garbage-collected scopes
 ///
 /// TODO: compile-fail tests

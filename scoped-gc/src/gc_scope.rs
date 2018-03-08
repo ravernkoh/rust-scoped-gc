@@ -5,18 +5,17 @@ use gc::Gc;
 use gc_state::GcState;
 use trace::Trace;
 
-#[derive(Debug)]
-pub struct GcScope<'gc> {
-  state: RefCell<GcState<'gc>>,
+pub struct GcScope {
+  state: RefCell<GcState>,
 }
 
-impl<'gc> GcScope<'gc> {
-  pub fn new() -> GcScope<'gc> {
+impl GcScope {
+  pub fn new() -> GcScope {
     GcScope { state: RefCell::new(GcState::new()) }
   }
 
   /// Allocates `value` in this garbage-collected scope and returns a `Gc` smart pointer to it.
-  pub fn alloc<T: Trace + 'gc>(&self, value: T) -> Result<Gc<'gc, T>, GcAllocErr> {
+  pub fn alloc<'gc, T: Trace + 'gc>(&'gc self, value: T) -> Result<Gc<'gc, T>, GcAllocErr> {
     value.unroot();
     self.state.borrow_mut()
       .alloc(value)

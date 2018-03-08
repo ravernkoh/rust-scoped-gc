@@ -1,20 +1,20 @@
 use ::std::cell::Cell;
 use ::std::ptr::NonNull;
+use ::std::raw::TraitObject;
 use trace::Trace;
 
 // Private: keeps track of the roots and marked state
-#[derive(Debug)]
-pub struct GcBox<'gc, T: Trace + ? Sized + 'gc> {
+pub struct GcBox<T: Trace + ? Sized> {
   // 8 bytes
   pub roots: Cell<usize>,
   // 1 byte
   pub marked: Cell<bool>,
   // 16 bytes
-  pub next: Option<NonNull<GcBox<'gc, Trace>>>,
+  pub next: Option<NonNull<TraitObject>>,
   pub value: T,
 }
 
-impl<'gc, T: Trace + ? Sized + 'gc> GcBox<'gc, T> {
+impl<T: Trace + ? Sized> GcBox<T> {
   pub fn mark_box(&self) {
     if !self.marked.get() {
       self.marked.set(true);
