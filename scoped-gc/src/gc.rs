@@ -18,11 +18,11 @@ trait GcBoxPtr<'gc, T: Trace + 'gc> {
   fn inner(&self) -> &GcBox<T>;
 }
 
-impl<'gc, T: Trace + 'gc> Gc<'gc, T> {
-  pub fn new(gc_scope: &GcScope<'gc>, value: T) -> Result<Gc<'gc, T>, GcAllocErr> {
-    gc_scope.alloc(value)
-  }
-}
+//impl<'gc, T: Trace + 'gc> Gc<'gc, T> {
+//  pub fn new(gc_scope: &GcScope<'gc>, value: T) -> Result<Gc<'gc, T>, GcAllocErr> {
+//    gc_scope.alloc(value)
+//  }
+//}
 
 impl<'gc, T: Trace + 'gc> GcBoxPtr<'gc, T> for Gc<'gc, T> {
   fn inner(&self) -> &GcBox<T> {
